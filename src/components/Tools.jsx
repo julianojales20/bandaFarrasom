@@ -235,7 +235,7 @@ export default function Tools({
 
       <div className="mt-4">
         <h3 className="text-white font-semibold">
-          <i className="fa-solid fa-timeline mr-2"></i>Gerar Roteiro
+          <i className="fa-solid fa-timeline mr-2"></i>Gerar Roteiro PDF
         </h3>
         <select
           className="bg-[#111] border border-[#333] text-white p-2 rounded mt-2 w-full"
@@ -327,7 +327,7 @@ export default function Tools({
                 <strong>juliano_jales20@hotmail.com</strong>
               </p>
               <form onSubmit={handleSendEmail}>
-                <div
+                <div className="email-form-grid"
                   style={{
                     display: "grid",
                     gridTemplateColumns: "1fr 1fr",
