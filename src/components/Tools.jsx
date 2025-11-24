@@ -309,6 +309,7 @@ export default function Tools({
               onClick={closeEmailModal}
             />
             <div
+              className="email-modal"
               style={{
                 position: "relative",
                 maxWidth: 720,
@@ -327,7 +328,7 @@ export default function Tools({
                 <strong>juliano_jales20@hotmail.com</strong>
               </p>
               <form onSubmit={handleSendEmail}>
-                <div className="email-form-grid"
+                <div
                   style={{
                     display: "grid",
                     gridTemplateColumns: "1fr 1fr",
