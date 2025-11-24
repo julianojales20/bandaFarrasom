@@ -2,7 +2,7 @@ import React from 'react'
 import { motion } from 'framer-motion'
 import jsPDF from "jspdf";
 import html2canvas from "html2canvas";
-import emailjs from "emailjs-com";
+import emailjs from "@emailjs/browser";
 import { useState } from "react";
 
 const container = {
@@ -124,6 +124,7 @@ export default function Tools({
             <div>
               <strong style="font-size:18px">${selected.name}</strong>
               <p style="margin:6px 0 0;color:#444">${selected.desc}</p>
+              <p style="margin:6px 0 0;color:#666;font-size:14px">Evento: ${eventType}</p>
             </div>
             <div style="text-align:right">
               <span style="font-size:20px;font-weight:800;color:#111">R$ ${selected.value.toLocaleString(
@@ -162,9 +163,9 @@ export default function Tools({
             <small>Proposta gerada por Banda Farrasom</small>
           </div>
 
-          <div style="margin-top:12px">
-            <div style="height:60px;border-bottom:1px solid #333;width:320px"></div>
-            <div style="margin-top:6px;font-weight:700">CONTRATANTE</div>
+          <div style="margin-top:12px;text-align:center">
+            <div style="height:60px;border-bottom:1px solid #333;width:320px;margin:0 auto"></div>
+            <div style="margin-top:6px;font-weight:700;text-align:center">CONTRATANTE</div>
           </div>
         </footer>
       </div>
@@ -298,23 +299,132 @@ export default function Tools({
           </div>
         )}
         {showEmailModal && (
-          <div style={{ position: 'fixed', inset: 0, zIndex: 60 }}>
-            <div style={{ position: 'absolute', inset: 0, background: 'rgba(0,0,0,0.45)' }} onClick={closeEmailModal} />
-            <div style={{ position: 'relative', maxWidth: 720, margin: '6vh auto', background: '#fff', borderRadius: 12, padding: 20, boxShadow: '0 24px 80px rgba(0,0,0,0.6)' }}>
-              <h3 style={{ margin: 0, marginBottom: 8, color: '#111' }}>Enviar Proposta por E-mail</h3>
-              <p style={{ marginTop: 0, marginBottom: 12, color: '#444' }}>Preencha os dados abaixo para enviar a proposta para <strong>juliano_jales20@hotmail.com</strong></p>
+          <div style={{ position: "fixed", inset: 0, zIndex: 60 }}>
+            <div
+              style={{
+                position: "absolute",
+                inset: 0,
+                background: "rgba(0,0,0,0.45)",
+              }}
+              onClick={closeEmailModal}
+            />
+            <div
+              style={{
+                position: "relative",
+                maxWidth: 720,
+                margin: "6vh auto",
+                background: "#fff",
+                borderRadius: 12,
+                padding: 20,
+                boxShadow: "0 24px 80px rgba(0,0,0,0.6)",
+              }}
+            >
+              <h3 style={{ margin: 0, marginBottom: 8, color: "#111" }}>
+                Enviar Proposta por E-mail
+              </h3>
+              <p style={{ marginTop: 0, marginBottom: 12, color: "#444" }}>
+                Preencha os dados abaixo para enviar a proposta para{" "}
+                <strong>juliano_jales20@hotmail.com</strong>
+              </p>
               <form onSubmit={handleSendEmail}>
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
-                  <input required placeholder="Nome" value={clientName} onChange={e => setClientName(e.target.value)} style={{ padding: 10, borderRadius: 6, border: '1px solid #ddd' }} />
-                  <input required placeholder="Telefone" value={clientPhone} onChange={e => setClientPhone(e.target.value)} style={{ padding: 10, borderRadius: 6, border: '1px solid #ddd' }} />
-                  <input placeholder="Cidade" value={clientCity} onChange={e => setClientCity(e.target.value)} style={{ padding: 10, borderRadius: 6, border: '1px solid #ddd' }} />
-                  <input placeholder="Assunto (opcional)" value={`Proposta - ${selected.name}`} readOnly style={{ padding: 10, borderRadius: 6, border: '1px solid #ddd', background: '#f7f7f7' }} />
+                <div
+                  style={{
+                    display: "grid",
+                    gridTemplateColumns: "1fr 1fr",
+                    gap: 10,
+                  }}
+                >
+                  <input
+                    required
+                    placeholder="Nome"
+                    value={clientName}
+                    onChange={(e) => setClientName(e.target.value)}
+                    style={{
+                      padding: 10,
+                      borderRadius: 6,
+                      border: "1px solid #ddd",
+                    }}
+                  />
+                  <input
+                    required
+                    placeholder="Telefone"
+                    value={clientPhone}
+                    onChange={(e) => setClientPhone(e.target.value)}
+                    style={{
+                      padding: 10,
+                      borderRadius: 6,
+                      border: "1px solid #ddd",
+                    }}
+                  />
+                  <input
+                    placeholder="Cidade"
+                    value={clientCity}
+                    onChange={(e) => setClientCity(e.target.value)}
+                    style={{
+                      padding: 10,
+                      borderRadius: 6,
+                      border: "1px solid #ddd",
+                    }}
+                  />
+                  <input
+                    placeholder="Assunto (opcional)"
+                    value={`Proposta - ${selected.name}`}
+                    readOnly
+                    style={{
+                      padding: 10,
+                      borderRadius: 6,
+                      border: "1px solid #ddd",
+                      background: "#f7f7f7",
+                    }}
+                  />
                 </div>
-                <textarea placeholder="Mensagem" value={clientMessage} onChange={e => setClientMessage(e.target.value)} rows={6} style={{ width: '100%', marginTop: 10, padding: 10, borderRadius: 6, border: '1px solid #ddd' }} />
+                <textarea
+                  placeholder="Mensagem"
+                  value={clientMessage}
+                  onChange={(e) => setClientMessage(e.target.value)}
+                  rows={6}
+                  style={{
+                    width: "100%",
+                    marginTop: 10,
+                    padding: 10,
+                    borderRadius: 6,
+                    border: "1px solid #ddd",
+                  }}
+                />
 
-                <div style={{ display: 'flex', gap: 10, justifyContent: 'flex-end', marginTop: 12 }}>
-                  <button type="button" onClick={closeEmailModal} style={{ padding: '8px 14px', borderRadius: 8, border: '1px solid #ccc', background: '#fff' }}>Cancelar</button>
-                  <button type="submit" disabled={sendingEmail} style={{ padding: '8px 14px', borderRadius: 8, background: '#FFC72C', border: 'none', fontWeight: 700 }}>{sendingEmail ? 'Enviando...' : 'Enviar E-mail'}</button>
+                <div
+                  style={{
+                    display: "flex",
+                    gap: 10,
+                    justifyContent: "flex-end",
+                    marginTop: 12,
+                  }}
+                >
+                  <button
+                    type="button"
+                    onClick={closeEmailModal}
+                    style={{
+                      padding: "8px 14px",
+                      borderRadius: 8,
+                      border: "1px solid #ccc",
+                      background: "#fff",
+                    }}
+                  >
+                    Cancelar
+                  </button>
+                  <button
+                    type="submit"
+                    disabled={sendingEmail}
+                    style={{
+                      padding: "8px 14px",
+                      borderRadius: 8,
+                      background: "#FFC72C",
+                      border: "none",
+                      fontWeight: 700,
+                    }}
+                  >
+                    {sendingEmail ? "Enviando..." : "Enviar E-mail"}
+                  </button>
                 </div>
               </form>
             </div>
