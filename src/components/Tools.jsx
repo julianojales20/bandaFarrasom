@@ -2,6 +2,8 @@ import React from 'react'
 import { motion } from 'framer-motion'
 import jsPDF from "jspdf";
 import html2canvas from "html2canvas";
+import emailjs from "emailjs-com";
+import { useState } from "react";
 
 const container = {
   hidden: { opacity: 0, y: 12 },
@@ -19,6 +21,81 @@ export default function Tools({
   generateEmail,
   emailResult,
 }) {
+  const [showEmailModal, setShowEmailModal] = useState(false);
+  const [clientName, setClientName] = useState("");
+  const [clientPhone, setClientPhone] = useState("");
+  const [clientCity, setClientCity] = useState("");
+  const [clientMessage, setClientMessage] = useState("");
+  const [sendingEmail, setSendingEmail] = useState(false);
+
+  function openEmailModal() {
+    setClientName("");
+    setClientPhone("");
+    setClientCity("");
+    setClientMessage("");
+    setShowEmailModal(true);
+  }
+
+  function closeEmailModal() {
+    setShowEmailModal(false);
+  }
+
+  function buildProposalText() {
+    const details = `Valores e Pagamento:\n- Eventos particulares: pagamento parcelado até a data do evento.\n- Prefeituras: pagamento mediante nota fiscal.`;
+    const contract = `Contrato e Hora Extra:\n- Contrato formal será elaborado.\n- Hora extra: R$ 1.000,00 por +1 hora.`;
+    return `BANDA FARRASOM - Proposta\n\nPacote: ${selected.name} - ${
+      selected.desc
+    }\nValor: R$ ${selected.value.toLocaleString(
+      "pt-BR"
+    )},00\n\n${details}\n\n${contract}\n\nEvento: ${eventType}\nTipo de contrato: ${contractType}`;
+  }
+
+  async function handleSendEmail(e) {
+    e.preventDefault();
+    if (!selected || !selected.id) {
+      alert("Selecione um pacote antes de enviar o email.");
+      return;
+    }
+    setSendingEmail(true);
+
+    const proposalText = buildProposalText();
+    const subject = `Proposta Banda Farrasom - ${selected.name}`;
+    const body = `${proposalText}\n\nMensagem do cliente:\n${clientMessage}\n\nContato:\n${clientName} | ${clientPhone} | ${clientCity}`;
+
+    // Try EmailJS if configured
+    const serviceId = import.meta.env.VITE_EMAILJS_SERVICE_ID;
+    const templateId = import.meta.env.VITE_EMAILJS_TEMPLATE_ID;
+    const userId = import.meta.env.VITE_EMAILJS_USER_ID;
+
+    try {
+      if (serviceId && templateId && userId) {
+        const templateParams = {
+          to_email: "juliano_jales20@hotmail.com",
+          from_name: clientName,
+          phone: clientPhone,
+          city: clientCity,
+          message: clientMessage,
+          subject,
+          proposal: proposalText,
+        };
+        await emailjs.send(serviceId, templateId, templateParams, userId);
+        alert("Email enviado com sucesso para juliano_jales20@hotmail.com");
+        closeEmailModal();
+      } else {
+        // fallback to mailto
+        const mailto = `mailto:juliano_jales20@hotmail.com?subject=${encodeURIComponent(
+          subject
+        )}&body=${encodeURIComponent(body)}`;
+        window.location.href = mailto;
+        closeEmailModal();
+      }
+    } catch (err) {
+      console.error("Erro ao enviar email", err);
+      alert("Erro ao enviar email. Veja o console para mais detalhes.");
+    } finally {
+      setSendingEmail(false);
+    }
+  }
   async function createPdf() {
     if (!selected || !selected.id) return;
 
@@ -207,7 +284,7 @@ export default function Tools({
           id="draft-email-btn"
           className="llm-button"
           disabled={!selected.id}
-          onClick={generateEmail}
+          onClick={openEmailModal}
         >
           Gerar E-mail
         </button>
@@ -218,6 +295,29 @@ export default function Tools({
             style={{ display: "block", marginTop: "1rem" }}
           >
             {emailResult}
+          </div>
+        )}
+        {showEmailModal && (
+          <div style={{ position: 'fixed', inset: 0, zIndex: 60 }}>
+            <div style={{ position: 'absolute', inset: 0, background: 'rgba(0,0,0,0.45)' }} onClick={closeEmailModal} />
+            <div style={{ position: 'relative', maxWidth: 720, margin: '6vh auto', background: '#fff', borderRadius: 12, padding: 20, boxShadow: '0 24px 80px rgba(0,0,0,0.6)' }}>
+              <h3 style={{ margin: 0, marginBottom: 8, color: '#111' }}>Enviar Proposta por E-mail</h3>
+              <p style={{ marginTop: 0, marginBottom: 12, color: '#444' }}>Preencha os dados abaixo para enviar a proposta para <strong>juliano_jales20@hotmail.com</strong></p>
+              <form onSubmit={handleSendEmail}>
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
+                  <input required placeholder="Nome" value={clientName} onChange={e => setClientName(e.target.value)} style={{ padding: 10, borderRadius: 6, border: '1px solid #ddd' }} />
+                  <input required placeholder="Telefone" value={clientPhone} onChange={e => setClientPhone(e.target.value)} style={{ padding: 10, borderRadius: 6, border: '1px solid #ddd' }} />
+                  <input placeholder="Cidade" value={clientCity} onChange={e => setClientCity(e.target.value)} style={{ padding: 10, borderRadius: 6, border: '1px solid #ddd' }} />
+                  <input placeholder="Assunto (opcional)" value={`Proposta - ${selected.name}`} readOnly style={{ padding: 10, borderRadius: 6, border: '1px solid #ddd', background: '#f7f7f7' }} />
+                </div>
+                <textarea placeholder="Mensagem" value={clientMessage} onChange={e => setClientMessage(e.target.value)} rows={6} style={{ width: '100%', marginTop: 10, padding: 10, borderRadius: 6, border: '1px solid #ddd' }} />
+
+                <div style={{ display: 'flex', gap: 10, justifyContent: 'flex-end', marginTop: 12 }}>
+                  <button type="button" onClick={closeEmailModal} style={{ padding: '8px 14px', borderRadius: 8, border: '1px solid #ccc', background: '#fff' }}>Cancelar</button>
+                  <button type="submit" disabled={sendingEmail} style={{ padding: '8px 14px', borderRadius: 8, background: '#FFC72C', border: 'none', fontWeight: 700 }}>{sendingEmail ? 'Enviando...' : 'Enviar E-mail'}</button>
+                </div>
+              </form>
+            </div>
           </div>
         )}
       </div>
