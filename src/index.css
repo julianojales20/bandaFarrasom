@@ -1,0 +1,96 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Small custom styles for animation that are easier with CSS */
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+.shimmer {
+  background: linear-gradient(90deg, #FFD700, #FFC72C, #ffffff);
+  background-size: 200% auto;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: shimmer 4s linear infinite;
+}
+
+:root{
+  --bg-dark: #0a0a0a;
+  --card-dark: #151515;
+  --text-light: #f5f5f5;
+  --accent-gold: #FFC72C;
+  --secondary-dark: #252525;
+  --shadow-gold: rgba(255, 199, 44, 0.25);
+}
+
+html,body,#root{
+  height:100%;
+}
+
+body{
+  background:var(--bg-dark);
+  color:var(--text-light);
+  font-family: 'Urbanist', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;
+  overflow-x: hidden;
+}
+
+.container{max-width:1080px;margin:0 auto;padding:40px 20px}
+
+.hero-banner{height:340px;border-radius:16px;animation:fadeIn 1s ease-in-out;background-position:center;background-size:cover;position:relative;overflow:hidden}
+.hero-banner::after{content:"";position:absolute;inset:0;background:rgba(0,0,0,0.55)}
+
+h1,h2,h3{font-weight:900;color:#fff}
+h1{font-size:3.5rem;text-align:center;background:linear-gradient(90deg,#FFD700,#FFC72C,#fff);-webkit-background-clip:text;-webkit-text-fill-color:transparent;animation:shimmer 4s infinite linear}
+h2{text-align:center;color:var(--accent-gold);margin-bottom:1rem}
+p{line-height:1.6}
+
+@keyframes fadeIn{from{opacity:0;transform:translateY(30px)}to{opacity:1;transform:translateY(0)}}
+
+.package-card{background:var(--card-dark);border-radius:12px;padding:30px;transition:.3s;border:2px solid transparent;position:relative;animation:fadeUp 1s ease-in-out both}
+.package-card:hover{transform:translateY(-8px) scale(1.02);box-shadow:0 0 25px var(--shadow-gold)}
+.package-card.selected{border-color:var(--accent-gold);box-shadow:0 0 25px var(--shadow-gold)}
+
+.llm-tools-area{background:var(--secondary-dark);border-radius:12px;padding:40px;margin-top:3rem;animation:fadeIn 1.5s ease-in}
+
+.packages-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:25px;margin-top:2rem}
+
+.price{text-align:right;font-size:1.8rem;font-weight:900;margin-top:15px}
+
+.llm-button{display:block;width:100%;background:var(--accent-gold);color:#111;border:none;padding:12px;border-radius:8px;font-weight:700;margin-top:20px;cursor:pointer;transition:all .3s}
+.llm-button:hover{background:#ffdd55;transform:scale(1.05);box-shadow:0 0 10px var(--shadow-gold)}
+
+select{background:#111;border:1px solid #333;color:#fff;padding:8px;border-radius:6px;margin:0.5rem 0 1rem;width:100%}
+
+footer{text-align:center;padding:30px 10px;border-top:1px solid #333;color:#999;margin-top:50px}
+footer a{color:var(--accent-gold);text-decoration:none;transition:.3s}
+footer a:hover{color:#fff;text-shadow:0 0 10px var(--accent-gold)}
+
+.detalhes-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:40px;margin-top:40px}
+
+.detalhe-card{background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01)), var(--card-dark);border-radius:12px;padding:0;border:1px solid rgba(255,255,255,0.04);box-shadow:0 10px 30px rgba(0,0,0,0.6);transition:transform .28s ease,box-shadow .28s ease;opacity:0;transform:translateY(20px);display:flex;overflow:hidden}
+.detalhe-card:hover{transform:translateY(-6px);box-shadow:0 18px 60px rgba(0,0,0,0.7)}
+.detalhe-card .card-accent{width:6px;background:linear-gradient(180deg,var(--accent-gold),#FFD700)}
+.detalhe-card .card-content{padding:28px 28px 28px 26px;color:#ddd;flex:1}
+.detalhe-card h3{color:#fff;font-size:20px;margin:0 0 12px 0;display:flex;align-items:center}
+.detalhe-card ul{list-style:none;padding-left:18px;line-height:1.8;margin-top:10px}
+.detalhe-card ul li{font-size:16px;color:#ccc;margin-bottom:6px}
+.descricao{color:#bbb;font-size:15px}
+.hora-extra{margin-top:18px}
+.valor-hora{color:var(--accent-gold);font-size:20px;font-weight:800;text-shadow:0 0 8px rgba(255,199,44,0.12)}
+.estrutura{margin-top:18px;color:#ddd;line-height:1.6}
+
+@media (min-width:960px){
+  .detalhes-grid{grid-template-columns:1fr 1fr}
+}
+
+
+.api-result{background:#111;border:1px solid #333;color:var(--accent-gold);font-family:monospace;border-radius:8px;padding:15px;max-height:400px;overflow-y:auto}
+
+.detalhe-card{background-color:var(--card-dark);border-radius:12px;padding:35px;border:1px solid #333;box-shadow:0 0 20px rgba(255,199,44,0.1);transition:.3s ease}
+
+@keyframes fadeUp{from{opacity:0;transform:translateY(30px)}to{opacity:1;transform:translateY(0)}}
+.fade-up{animation:fadeUp 1s ease forwards}
+
