@@ -17,8 +17,8 @@ const detailsItem = {
 
 const initialPackages = [
   { id: 'banda-bronze', name: 'Bronze', value: 4000, desc: 'Show sem estrutura', icon: 'fa-microphone-slash' },
-  { id: 'banda-prata', name: 'Prata', value: 5500, desc: 'Show com estrutura básica', icon: 'fa-microphone' },
-  { id: 'banda-ouro', name: 'Ouro ★', value: 7500, desc: 'Pacote completo com LED', icon: 'fa-volume-high' },
+  { id: 'banda-prata', name: 'Prata', value: 6000, desc: 'Show com estrutura básica', icon: 'fa-microphone' },
+  { id: 'banda-ouro', name: 'Ouro ★', value: 8000, desc: 'Pacote completo com LED', icon: 'fa-volume-high' },
   { id: 'acustico-bronze', name: 'Bronze', value: 2000, desc: 'Show simples', icon: 'fa-guitar' },
   { id: 'acustico-prata', name: 'Prata', value: 3000, desc: 'Show com som simples', icon: 'fa-music' },
   { id: 'acustico-ouro', name: 'Ouro', value: 5500, desc: 'Estrutura completa', icon: 'fa-lightbulb' }
