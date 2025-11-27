@@ -4,6 +4,8 @@ import jsPDF from "jspdf";
 import html2canvas from "html2canvas";
 import emailjs from "@emailjs/browser";
 import { useState } from "react";
+import headerImg from "../assets/images/header.JPG";
+import logoBanda from "../assets/images/logoBanda.PNG";
 
 const container = {
   hidden: { opacity: 0, y: 12 },
@@ -112,10 +114,12 @@ export default function Tools({
     wrapper.style.lineHeight = "1.4";
     wrapper.innerHTML = `
       <div style="max-width:1000px;margin:0 auto;border:0">
-        <header style="text-align:center;padding-bottom:18px;border-bottom:1px solid #eee;margin-bottom:20px">
-          <h1 style="font-size:36px;margin:0;color:#111">BANDA FARRASOM</h1>
-          <div style="height:6px;width:160px;margin:10px auto;background:linear-gradient(90deg,#FFC72C,#FFD700);"></div>
-          <p style="margin:0;color:#333">Proposta Interativa de Show Profissional</p>
+        <header style="text-align:center;padding-bottom:18px;margin-bottom:20px">
+          <div style="position:relative;border-radius:12px;overflow:hidden;height:400px;background-image:url('${headerImg}');background-position:top center;background-size:cover;">
+            <div style="position:absolute;inset:0;background:rgba(0,0,0,0.6)"></div>
+            <img src="${logoBanda}" alt="Banda Farrasom" style="position:relative;z-index:2;display:block;margin:20px auto 6px;height:300px;width:auto;object-fit:contain" />
+            <p style="position:relative;z-index:2;color:#fff;margin:0;font-size:14px">Proposta Interativa de Show Profissional</p>
+          </div>
         </header>
 
         <section style="margin-top:18px;padding:18px;border-radius:8px;border:1px solid #f1f1f1;background:#fff;box-shadow:0 6px 18px rgba(0,0,0,0.04)">
