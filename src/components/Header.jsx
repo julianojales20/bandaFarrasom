@@ -40,7 +40,7 @@ export default function Header() {
               src={logoBanda}
               alt="Banda Farrasom"
               loading="lazy"
-              className="w-auto mx-auto h-[200px] sm:h-[150px] md:h-[300px] lg:h-[240px] object-contain"
+              className="w-auto mx-auto h-[250px] sm:h-[250px] md:h-[350px] lg:h-[350px] object-contain"
               style={{ display: "block" }}
             />
           </motion.div>
