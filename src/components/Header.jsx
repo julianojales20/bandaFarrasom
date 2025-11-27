@@ -1,6 +1,8 @@
 import React from 'react'
 import { motion } from 'framer-motion'
-import headerImg from "../assets/images/header.jpg";
+import headerImg from "../assets/images/header.JPG";
+import logoBanda from "../assets/images/logoBanda.PNG";
+import Image from "./Image";
 
 const containerVariant = {
   hidden: {},
@@ -17,22 +19,31 @@ export default function Header() {
     <header>
       <div
         className="relative rounded-xl h-80 bg-cover bg-center flex items-center justify-center hero-banner"
-        style={{ backgroundImage: `url(${headerImg})` }}
+        style={{
+          backgroundImage: `url(${headerImg})`,
+          backgroundPosition: "top center",
+          backgroundSize: "cover",
+        }}
       >
-        <div className="absolute inset-0 bg-black/60" />
+        <div className="absolute inset-0 bg-black/30" />
         <motion.div
           className="relative z-10 text-center container px-4 hero-banner-content"
           variants={containerVariant}
           initial="hidden"
           animate="show"
         >
-          <motion.h1 variants={itemVariant}>BANDA FARRASOM</motion.h1>
-          <motion.p
+          <motion.div
+            className="flex flex-col items-center gap-4"
             variants={itemVariant}
-            style={{ fontSize: "1.3rem", color: "#fff" }}
           >
-            Proposta Interativa de Show Profissional
-          </motion.p>
+            <Image
+              src={logoBanda}
+              alt="Banda Farrasom"
+              loading="lazy"
+              className="w-auto mx-auto h-[350px] object-contain"
+              style={{ display: "block" }}
+            />
+          </motion.div>
         </motion.div>
       </div>
     </header>
