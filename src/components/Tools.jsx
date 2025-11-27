@@ -7,6 +7,13 @@ import { useState } from "react";
 import headerImg from "../assets/images/header.JPG";
 import logoBanda from "../assets/images/logoBanda.PNG";
 
+// Initialize EmailJS with the provided public key (per EmailJS docs)
+try {
+  emailjs.init("JsY6eMtso0PYVEQQE");
+} catch (e) {
+  // ignore init errors in non-browser environments
+}
+
 const container = {
   hidden: { opacity: 0, y: 12 },
   show: { opacity: 1, y: 0, transition: { duration: 0.6, ease: "easeOut" } },
@@ -23,7 +30,10 @@ export default function Tools({
   generateEmail,
   emailResult,
 }) {
+  const noPackage = !selected || !selected.id;
   const [showEmailModal, setShowEmailModal] = useState(false);
+  const [showNeedPackageModal, setShowNeedPackageModal] = useState(false);
+  const [needAction, setNeedAction] = useState(null);
   const [clientName, setClientName] = useState("");
   const [clientPhone, setClientPhone] = useState("");
   const [clientCity, setClientCity] = useState("");
@@ -64,28 +74,29 @@ export default function Tools({
     const subject = `Proposta Banda Farrasom - ${selected.name}`;
     const body = `${proposalText}\n\nMensagem do cliente:\n${clientMessage}\n\nContato:\n${clientName} | ${clientPhone} | ${clientCity}`;
 
-    // Try EmailJS if configured
-    const serviceId = import.meta.env.VITE_EMAILJS_SERVICE_ID;
-    const templateId = import.meta.env.VITE_EMAILJS_TEMPLATE_ID;
-    const userId = import.meta.env.VITE_EMAILJS_USER_ID;
+    // EmailJS configuration (service/template/public key provided)
+    const serviceId = "service_wlupn47";
+    const templateId = "template_ablhdho";
 
     try {
-      if (serviceId && templateId && userId) {
+      if (serviceId && templateId) {
         const templateParams = {
-          to_email: "juliano_jales20@hotmail.com",
+          to_email: "martinsproducoesartisticas@outlook.com",
           from_name: clientName,
           phone: clientPhone,
           city: clientCity,
           message: clientMessage,
           subject,
           proposal: proposalText,
+          reply_to: clientPhone,
         };
-        await emailjs.send(serviceId, templateId, templateParams, userId);
-        alert("Email enviado com sucesso para juliano_jales20@hotmail.com");
+        // Use EmailJS send method per docs (public key already initialized)
+        await emailjs.send(serviceId, templateId, templateParams);
+        alert("Email enviado com sucesso para martinsproducoesartisticas@outlook.com");
         closeEmailModal();
       } else {
         // fallback to mailto
-        const mailto = `mailto:juliano_jales20@hotmail.com?subject=${encodeURIComponent(
+        const mailto = `mailto:martinsproducoesartisticas@outlook.com?subject=${encodeURIComponent(
           subject
         )}&body=${encodeURIComponent(body)}`;
         window.location.href = mailto;
@@ -214,11 +225,25 @@ export default function Tools({
 
   // helper to call both generateScript (existing) and createPdf
   function handleGenerateScript() {
+    if (!selected || !selected.id) {
+      setNeedAction("pdf");
+      setShowNeedPackageModal(true);
+      return;
+    }
     generateScript();
     // wait briefly to ensure UI updates, then generate pdf
     setTimeout(() => {
       createPdf();
     }, 300);
+  }
+
+  function handleOpenEmail() {
+    if (!selected || !selected.id) {
+      setNeedAction("email");
+      setShowNeedPackageModal(true);
+      return;
+    }
+    openEmailModal();
   }
 
   return (
@@ -234,13 +259,20 @@ export default function Tools({
       </h2>
       <p id="selected-package-display">
         Pacote Selecionado:{" "}
-        <span style={{ color: "var(--accent-gold)" }}>{selected.name}</span>
+        <span style={{ color: "var(--accent-gold)" }}>
+          {selected && selected.name
+            ? selected.name
+            : "Nenhum pacote selecionado"}
+        </span>
       </p>
 
+      {noPackage && (
+        <div className="mt-3 p-2 rounded text-red-200 bg-red-900/20">
+          Selecione o pacote antes de gerar a proposta.
+        </div>
+      )}
+
       <div className="mt-4">
-        <h3 className="text-white font-semibold">
-          <i className="fa-solid fa-timeline mr-2"></i>Gerar Roteiro PDF
-        </h3>
         <select
           className="bg-[#111] border border-[#333] text-white p-2 rounded mt-2 w-full"
           value={eventType}
@@ -252,10 +284,25 @@ export default function Tools({
           <option>Festa Corporativa</option>
           <option>Praça Pública</option>
         </select>
+
+        <select
+          className="bg-[#111] border border-[#333] text-white p-2 rounded mt-2 w-full"
+          value={contractType}
+          onChange={(e) => setContractType(e.target.value)}
+          id="contract-type"
+        >
+          <option>Particular</option>
+          <option>Prefeitura</option>
+          <option>Produtor de Eventos</option>
+        </select>
+
+        <h3 className="text-white font-semibold">
+          <i className="fa-solid fa-timeline mr-2"></i>Gerar Roteiro PDF
+        </h3>
+
         <button
           id="generate-script-btn"
           className="llm-button"
-          disabled={!selected.id}
           onClick={handleGenerateScript}
         >
           Gerar Roteiro
@@ -275,21 +322,10 @@ export default function Tools({
         <h3 className="text-white font-semibold">
           <i className="fa-solid fa-envelope mr-2"></i> Gerar E-mail de Proposta
         </h3>
-        <select
-          className="bg-[#111] border border-[#333] text-white p-2 rounded mt-2 w-full"
-          value={contractType}
-          onChange={(e) => setContractType(e.target.value)}
-          id="contract-type"
-        >
-          <option>Particular</option>
-          <option>Prefeitura</option>
-          <option>Produtor de Eventos</option>
-        </select>
         <button
           id="draft-email-btn"
           className="llm-button"
-          disabled={!selected.id}
-          onClick={openEmailModal}
+          onClick={handleOpenEmail}
         >
           Gerar E-mail
         </button>
@@ -432,6 +468,76 @@ export default function Tools({
                   </button>
                 </div>
               </form>
+            </div>
+          </div>
+        )}
+        {showNeedPackageModal && (
+          <div style={{ position: "fixed", inset: 0, zIndex: 70 }}>
+            <div
+              style={{
+                position: "absolute",
+                inset: 0,
+                background: "rgba(0,0,0,0.6)",
+              }}
+              onClick={() => setShowNeedPackageModal(false)}
+            />
+            <div
+              style={{
+                position: "relative",
+                maxWidth: 560,
+                margin: "12vh auto",
+                background: "#111",
+                color: "#fff",
+                borderRadius: 10,
+                padding: 20,
+                boxShadow: "0 24px 80px rgba(0,0,0,0.8)",
+                textAlign: "center",
+              }}
+            >
+              <h3 style={{ margin: 0, marginBottom: 8 }}>
+                Selecione um pacote
+              </h3>
+              <p style={{ color: "#ddd", marginBottom: 16 }}>
+                Você precisa selecionar um pacote antes de{" "}
+                {needAction === "email" ? "gerar o e-mail" : "gerar o roteiro"}.
+              </p>
+              <div
+                style={{ display: "flex", gap: 10, justifyContent: "center" }}
+              >
+                <button
+                  onClick={() => {
+                    setShowNeedPackageModal(false);
+                    // scroll to packages grid if present
+                    const el = document.querySelector(".packages-grid");
+                    if (el)
+                      el.scrollIntoView({
+                        behavior: "smooth",
+                        block: "center",
+                      });
+                  }}
+                  style={{
+                    padding: "8px 14px",
+                    borderRadius: 8,
+                    background: "#FFC72C",
+                    border: "none",
+                    fontWeight: 700,
+                  }}
+                >
+                  Ir para pacotes
+                </button>
+                <button
+                  onClick={() => setShowNeedPackageModal(false)}
+                  style={{
+                    padding: "8px 14px",
+                    borderRadius: 8,
+                    background: "#333",
+                    border: "1px solid #555",
+                    color: "#fff",
+                  }}
+                >
+                  Fechar
+                </button>
+              </div>
             </div>
           </div>
         )}
