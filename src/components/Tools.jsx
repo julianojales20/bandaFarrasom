@@ -53,11 +53,11 @@ export default function Tools({
   }
 
   function buildProposalText() {
+    const showType = selected.id.startsWith("banda-") ? "Show com banda" : "Show acústico";
+    const obsLine = selected.obs ? `\nObs: ${selected.obs}` : "";
     const details = `Valores e Pagamento:\n- Eventos particulares: pagamento parcelado até a data do evento.\n- Prefeituras: pagamento mediante nota fiscal.`;
     const contract = `Contrato e Hora Extra:\n- Contrato formal será elaborado.\n- Hora extra: R$ 1.000,00 por +1 hora.`;
-    return `BANDA FARRASOM - Proposta\n\nPacote: ${selected.name} - ${
-      selected.desc
-    }\nValor: R$ ${selected.value.toLocaleString(
+    return `BANDA FARRASOM - Proposta\n\n${showType}\nPacote: ${selected.name}\n${selected.desc}\nDuração: 2h30${obsLine}\n\nValor: R$ ${selected.value.toLocaleString(
       "pt-BR"
     )},00\n\n${details}\n\n${contract}\n\nEvento: ${eventType}\nTipo de contrato: ${contractType}`;
   }
@@ -104,13 +104,28 @@ export default function Tools({
       }
     } catch (err) {
       console.error("Erro ao enviar email", err);
-      alert("Erro ao enviar email. Veja o console para mais detalhes.");
+      alert("Não foi possível enviar o e-mail. Tente novamente ou entre em contato por outro canal.");
     } finally {
       setSendingEmail(false);
     }
   }
+  function escapeHtml(text) {
+    if (!text) return "";
+    const div = document.createElement("div");
+    div.textContent = text;
+    return div.innerHTML;
+  }
+
   async function createPdf() {
     if (!selected || !selected.id) return;
+
+    const showType = selected.id.startsWith("banda-") ? "Show com banda" : "Show acústico";
+    const duration = "2h30";
+    const descSafe = escapeHtml(selected.desc);
+    const obsSafe = selected.obs ? escapeHtml(selected.obs) : "";
+    const obsHtml = obsSafe
+      ? `<p style="margin:8px 0 0;color:#555;font-size:14px;font-style:italic"><strong>Obs:</strong> ${obsSafe}</p>`
+      : "";
 
     // Build a light-themed HTML template offscreen
     const wrapper = document.createElement("div");
@@ -134,15 +149,18 @@ export default function Tools({
         </header>
 
         <section style="margin-top:18px;padding:18px;border-radius:8px;border:1px solid #f1f1f1;background:#fff;box-shadow:0 6px 18px rgba(0,0,0,0.04)">
-          <h2 style="font-size:20px;margin:0 0 8px 0;color:#111">Pacote Selecionado</h2>
-          <div style="display:flex;justify-content:space-between;align-items:center;padding-top:8px">
-            <div>
-              <strong style="font-size:18px">${selected.name}</strong>
-              <p style="margin:6px 0 0;color:#444">${selected.desc}</p>
-              <p style="margin:6px 0 0;color:#666;font-size:14px">Evento: ${eventType}</p>
+          <h2 style="font-size:20px;margin:0 0 12px 0;color:#111">Pacote Selecionado</h2>
+          <div style="display:flex;justify-content:space-between;align-items:flex-start;padding-top:8px;gap:24px;flex-wrap:wrap">
+            <div style="flex:1;min-width:260px">
+              <p style="margin:0;color:#666;font-size:13px;text-transform:uppercase;letter-spacing:0.5px">${showType}</p>
+              <strong style="font-size:18px;color:#111">Pacote ${escapeHtml(selected.name)}</strong>
+              <p style="margin:8px 0 0;color:#444">${descSafe}</p>
+              <p style="margin:6px 0 0;color:#555;font-size:14px"><strong>Duração:</strong> ${duration}</p>
+              ${obsHtml}
+              <p style="margin:12px 0 0;color:#666;font-size:14px"><strong>Evento:</strong> ${escapeHtml(eventType)}</p>
             </div>
-            <div style="text-align:right">
-              <span style="font-size:20px;font-weight:800;color:#111">R$ ${selected.value.toLocaleString(
+            <div style="text-align:right;flex-shrink:0">
+              <span style="font-size:22px;font-weight:800;color:#111">R$ ${selected.value.toLocaleString(
                 "pt-BR"
               )},00</span>
             </div>
@@ -217,9 +235,9 @@ export default function Tools({
       pdf.save(fileName);
     } catch (err) {
       console.error("PDF generation failed", err);
-      alert("Erro ao gerar PDF. Veja o console para detalhes.");
+      alert("Não foi possível gerar o PDF. Tente novamente.");
     } finally {
-      document.body.removeChild(wrapper);
+      if (wrapper.parentNode) document.body.removeChild(wrapper);
     }
   }
 
@@ -339,7 +357,7 @@ export default function Tools({
           </div>
         )}
         {showEmailModal && (
-          <div style={{ position: "fixed", inset: 0, zIndex: 60 }}>
+          <div role="dialog" aria-modal="true" aria-labelledby="email-modal-title" style={{ position: "fixed", inset: 0, zIndex: 60 }}>
             <div
               style={{
                 position: "absolute",
@@ -347,6 +365,7 @@ export default function Tools({
                 background: "rgba(0,0,0,0.45)",
               }}
               onClick={closeEmailModal}
+              aria-hidden="true"
             />
             <div
               className="email-modal"
@@ -360,12 +379,12 @@ export default function Tools({
                 boxShadow: "0 24px 80px rgba(0,0,0,0.6)",
               }}
             >
-              <h3 style={{ margin: 0, marginBottom: 8, color: "#111" }}>
+              <h3 id="email-modal-title" style={{ margin: 0, marginBottom: 8, color: "#111" }}>
                 Enviar Proposta por E-mail
               </h3>
               <p style={{ marginTop: 0, marginBottom: 12, color: "#444" }}>
                 Preencha os dados abaixo para enviar a proposta para{" "}
-                <strong>juliano_jales20@hotmail.com</strong>
+                <strong>martinsproducoesartisticas@outlook.com</strong>
               </p>
               <form onSubmit={handleSendEmail}>
                 <div
@@ -472,7 +491,7 @@ export default function Tools({
           </div>
         )}
         {showNeedPackageModal && (
-          <div style={{ position: "fixed", inset: 0, zIndex: 70 }}>
+          <div role="alertdialog" aria-modal="true" aria-labelledby="need-package-title" style={{ position: "fixed", inset: 0, zIndex: 70 }}>
             <div
               style={{
                 position: "absolute",
@@ -480,6 +499,7 @@ export default function Tools({
                 background: "rgba(0,0,0,0.6)",
               }}
               onClick={() => setShowNeedPackageModal(false)}
+              aria-hidden="true"
             />
             <div
               style={{
@@ -494,7 +514,7 @@ export default function Tools({
                 textAlign: "center",
               }}
             >
-              <h3 style={{ margin: 0, marginBottom: 8 }}>
+              <h3 id="need-package-title" style={{ margin: 0, marginBottom: 8 }}>
                 Selecione um pacote
               </h3>
               <p style={{ color: "#ddd", marginBottom: 16 }}>

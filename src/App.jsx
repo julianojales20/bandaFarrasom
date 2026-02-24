@@ -16,46 +16,52 @@ const detailsItem = {
 }
 
 const initialPackages = [
+  // Show com banda
   {
     id: "banda-bronze",
     name: "Bronze",
     value: 4000,
-    desc: "Show sem estrutura",
+    desc: "Somente o show com banda, sem estrutura e sem som",
     icon: "fa-microphone-slash",
   },
   {
     id: "banda-prata",
     name: "Prata",
     value: 6000,
-    desc: "Show com estrutura básica",
+    desc: "Show com a banda, estrutura básica de som e iluminação simples",
+    obs: "O som fica disponível do início ao fim do evento.",
     icon: "fa-microphone",
   },
   {
     id: "banda-ouro",
     name: "Ouro ★",
     value: 8000,
-    desc: "Pacote completo com LED",
+    desc: "Show com banda, estrutura completa de som e iluminação e painel de Led",
+    obs: "O som fica disponível do início ao fim do evento.",
     icon: "fa-volume-high",
   },
+  // Show acústico
   {
     id: "acustico-bronze",
     name: "Bronze",
     value: 2000,
-    desc: "Show simples",
+    desc: "Somente o show com banda, sem estrutura e sem som",
     icon: "fa-guitar",
   },
   {
     id: "acustico-prata",
     name: "Prata",
     value: 4000,
-    desc: "Show com som simples",
+    desc: "Show com a banda, estrutura básica de som e iluminação simples",
+    obs: "O som fica disponível do início ao fim do evento.",
     icon: "fa-music",
   },
   {
     id: "acustico-ouro",
     name: "Ouro",
     value: 6000,
-    desc: "Estrutura completa",
+    desc: "Show com banda, estrutura completa de som e iluminação e painel de Led",
+    obs: "O som fica disponível do início ao fim do evento.",
     icon: "fa-lightbulb",
   },
 ];

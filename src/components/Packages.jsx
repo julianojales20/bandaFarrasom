@@ -12,9 +12,10 @@ function PackageCard({ p, selectedId, onSelect }) {
       <ul className="mt-3 list-none text-gray-300 space-y-1">
         <li>{p.desc}</li>
         <li>Duração: 2h30</li>
+        {p.obs && <li className="text-amber-200/90 italic">Obs: {p.obs}</li>}
       </ul>
       <p className="price">R$ {p.value.toLocaleString('pt-BR')},00</p>
-      <button className="llm-button" onClick={() => onSelect(p)}>Selecionar</button>
+      <button type="button" className="llm-button" onClick={() => onSelect(p)} aria-label={`Selecionar pacote ${p.name}`}>Selecionar</button>
     </motion.div>
   )
 }
